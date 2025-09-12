@@ -111,3 +111,9 @@ TW_SCREEN_BLANK_ON_BOOT := true
 TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_USE_TOOLBOX := true
 TW_INCLUDE_REPACKTOOLS := true
+
+Treble
+BOARD_VNDK_VERSION := current
+
+Vendor_boot recovery ramdisk
+BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
