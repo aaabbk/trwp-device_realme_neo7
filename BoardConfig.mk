@@ -10,13 +10,6 @@ DEVICE_PATH := device/oplus/ossi
 # For building with minimal manifest
 ALLOW_MISSING_DEPENDENCIES := true
 
-# 首先启用 vendor_boot 构建
-BOARD_USES_VENDOR_BOOT := true
-BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 100663296
-
-# 然后再设置移动恢复资源
-BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
-
 # A/B
 AB_OTA_UPDATER := true
 AB_OTA_PARTITIONS += \
