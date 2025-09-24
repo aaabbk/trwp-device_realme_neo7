@@ -67,7 +67,7 @@ ifeq ($(TARGET_FORCE_PREBUILT_KERNEL),true)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
 BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
-BOARD_INCLUDE_DTB_IN_BOOTIMG := 
+BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 endif
 
 # Partitions
@@ -112,8 +112,8 @@ TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_USE_TOOLBOX := true
 TW_INCLUDE_REPACKTOOLS := true
 
-Treble
+# Treble
 BOARD_VNDK_VERSION := current
 
-Vendor_boot recovery ramdisk
+# Vendor_boot recovery ramdisk
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
