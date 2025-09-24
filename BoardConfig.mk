@@ -11,15 +11,34 @@ DEVICE_PATH := device/oplus/ossi
 ALLOW_MISSING_DEPENDENCIES := true
 
 # A/B
-AB_OTA_UPDATER := true
-AB_OTA_PARTITIONS += \
+AB_OTA_PARTITIONS := \
+    boot \
+    init_boot \
+    vendor_boot \
+    dtbo \
+    odm \
+    product \
+    system \
+    system_ext \
+    system_dlkm \
+    vbmeta \
+    vbmeta_system \
     vbmeta_vendor \
     vendor \
-    odm \
-    system \
-    vbmeta_system \
-    product
-BOARD_USES_RECOVERY_AS_BOOT := true
+    vendor_dlkm
+
+# AB partitions for oplus
+AB_OTA_PARTITIONS += \
+    my_bigball \
+    my_carrier \
+    my_company \
+    my_engineering \
+    my_heytap \
+    my_manifest \
+    my_preload \
+    my_product \
+    my_region \
+    my_stock
 
 # Architecture
 TARGET_ARCH := arm64
