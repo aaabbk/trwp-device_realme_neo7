@@ -24,7 +24,7 @@ endif
 
 # 产品标识（必须与文件名匹配）
 PRODUCT_DEVICE := ossi
-PRODUCT_NAME := omni_ossi  # 必须与文件名一致
+PRODUCT_NAME := twrp_Neo7  # 必须与文件名一致
 PRODUCT_BRAND := realme
 PRODUCT_MODEL := RMX5060
 PRODUCT_MANUFACTURER := realme

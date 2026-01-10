@@ -9,7 +9,7 @@ LOCAL_PATH := device/oplus/ossi
 
 # 基本产品配置
 PRODUCT_DEVICE := ossi
-PRODUCT_NAME := omni_ossi
+PRODUCT_NAME := twrp_Neo7
 PRODUCT_BRAND := realme
 PRODUCT_MODEL := RMX5060
 PRODUCT_MANUFACTURER := realme
