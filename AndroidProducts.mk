@@ -9,6 +9,4 @@ PRODUCT_MAKEFILES := \
     $(LOCAL_DIR)/twrp_Neo7.mk
 
 COMMON_LUNCH_CHOICES := \
-    twrp_Neo7-user \
-    twrp_Neo7-userdebug \
     twrp_Neo7-eng
