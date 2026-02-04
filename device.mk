@@ -50,8 +50,8 @@ AB_OTA_POSTINSTALL_CONFIG += \
     FILESYSTEM_TYPE_vendor=ext4 \
     POSTINSTALL_OPTIONAL_vendor=true
 
-Dynamic
+#Dynamic
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 
-Soong namespaces
+#Soong namespaces
 PRODUCT_SOONG_NAMESPACES += $(LOCAL_PATH)
