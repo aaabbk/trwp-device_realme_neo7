@@ -29,39 +29,39 @@ odm /odm ext4 ro wait,slotselect,avb,logical,first_stage_mount,avb_keys=/vendor/
 
 
 
-my_product /mnt/vendor/my_product ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_product /mnt/vendor/my_product erofs ro wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_engineering /mnt/vendor/my_engineering ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_engineering /mnt/vendor/my_engineering erofs ro wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_company /mnt/vendor/my_company ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_company /mnt/vendor/my_company erofs ro wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_carrier /mnt/vendor/my_carrier ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_carrier /mnt/vendor/my_carrier erofs ro wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_region /mnt/vendor/my_region ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_region /mnt/vendor/my_region erofs ro wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_heytap /mnt/vendor/my_heytap ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_heytap /mnt/vendor/my_heytap erofs ro wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_stock /mnt/vendor/my_stock ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_stock /mnt/vendor/my_stock erofs ro wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_preload /mnt/vendor/my_preload ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_preload /mnt/vendor/my_preload erofs ro wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_bigball /mnt/vendor/my_bigball ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_bigball /mnt/vendor/my_bigball erofs ro wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_manifest /mnt/vendor/my_manifest ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
-my_manifest /mnt/vendor/my_manifest erofs ro wait,slotselect,logical,first_stage_mount,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_product /my_product ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_product /my_product erofs ro wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_engineering /my_engineering ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_engineering /my_engineering erofs ro wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_company /my_company ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_company /my_company erofs ro wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_carrier /my_carrier ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_carrier /my_carrier erofs ro wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_region /my_region ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_region /my_region erofs ro wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_heytap /my_heytap ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_heytap /my_heytap erofs ro wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_stock /my_stock ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_stock /my_stock erofs ro wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_preload /my_preload ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_preload /my_preload erofs ro wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_bigball /my_bigball ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_bigball /my_bigball erofs ro wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_manifest /my_manifest ext4 ro,barrier=1 wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
+my_manifest /my_manifest erofs ro wait,slotselect,logical,first_stage_mount,nofail,avb_keys=/vendor/etc/oplus_avb.pubkey
 
-###
-/mnt/vendor/my_product /my_product none ro,bind wait,nofail
-/mnt/vendor/my_engineering /my_engineering none ro,bind wait,nofail
-/mnt/vendor/my_company /my_company none ro,bind wait,nofail
-/mnt/vendor/my_carrier /my_carrier none ro,bind wait,nofail
-/mnt/vendor/my_region /my_region none ro,bind wait,nofail
-/mnt/vendor/my_heytap /my_heytap none ro,bind wait,nofail
-/mnt/vendor/my_stock /my_stock none ro,bind wait,nofail
-/mnt/vendor/my_preload /my_preload none ro,bind wait,nofail
-/mnt/vendor/my_bigball /my_bigball none ro,bind wait,nofail
-/mnt/vendor/my_manifest /my_manifest none ro,bind wait,nofail
 
+overlay-overlay /product/app overlay ro,seclabel,noatime,redirect_dir=nofollow,userxattr,lowerdir=/my_region/app:/my_preload/app:/my_product/app:/my_heytap/app:/my_stock/app:/my_engineering/app:/product/app overlayfs_remove_missing_lowerdir
+overlay-overlay /product/priv-app overlay ro,seclabel,noatime,redirect_dir=nofollow,userxattr,lowerdir=/my_region/priv-app:/my_preload/priv-app:/my_product/priv-app:/my_heytap/priv-app:/my_stock/priv-app:/my_engineering/priv-app:/product/priv-app overlayfs_remove_missing_lowerdir
+overlay-overlay /product/lib64 overlay ro,seclabel,noatime,redirect_dir=nofollow,userxattr,lowerdir=/my_region/lib64:/my_preload/lib64:/my_product/lib64:/my_heytap/lib64:/my_stock/lib64:/my_engineering/lib64:/product/lib64 overlayfs_remove_missing_lowerdir
+overlay-overlay /product/lib overlay ro,seclabel,noatime,redirect_dir=nofollow,userxattr,lowerdir=/my_region/lib:/my_preload/lib:/my_product/lib:/my_heytap/lib:/my_stock/lib:/my_engineering/lib:/product/lib overlayfs_remove_missing_lowerdir
+
+overlay-overlay /product/etc/permissions overlay ro,seclabel,redirect_dir=nofollow,userxattr,lowerdir=/my_product/product_overlay/etc/permissions:/product/etc/permissions overlayfs_remove_missing_lowerdir
+overlay-overlay /product/framework overlay ro,seclabel,redirect_dir=nofollow,userxattr,lowerdir=/my_product/product_overlay/framework:/product/framework overlayfs_remove_missing_lowerdir
+overlay-overlay /product/media/audio/ui overlay ro,seclabel,redirect_dir=nofollow,userxattr,lowerdir=/my_product/product_overlay/media/audio/ui:/product/media/audio/ui overlayfs_remove_missing_lowerdir
+
+overlay-overlay /system_ext/media/audio/ringtones overlay ro,seclabel,redirect_dir=nofollow,userxattr,lowerdir=/my_product/product_overlay/media/audio/ringtones:/system_ext/media/audio/ringtones overlayfs_remove_missing_lowerdir
+overlay-overlay /system_ext/media/audio/notifications overlay ro,seclabel,redirect_dir=nofollow,userxattr,lowerdir=/my_product/product_overlay/media/audio/notifications:/system_ext/media/audio/notifications overlayfs_remove_missing_lowerdir
 
 
 vendor_dlkm /vendor_dlkm erofs ro wait,slotselect,avb,logical,first_stage_mount
@@ -78,7 +78,7 @@ system_dlkm /system_dlkm ext4 ro wait,slotselect,avb,logical,first_stage_mount,a
 
 /dev/block/by-name/metadata /metadata f2fs noatime,nosuid,nodev,discard wait,check,formattable,first_stage_mount
 
-/dev/block/by-name/userdata /data f2fs noatime,nosuid,nodev,discard,noflush_merge,fsync_mode=nobarrier,reserve_root=134217,resgid=1065,inlinecrypt wait,check,formattable,quota,latemount,resize,reservedsize=128m,checkpoint=fs,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption,fsverity,fscompress
+/dev/block/by-name/userdata /data f2fs noatime,nosuid,nodev,discard,noflush_merge,fsync_mode=nobarrier,reserve_root=134217,resgid=1065,inlinecrypt wait,check,formattable,quota,latemount,resize,reservedsize=128m,checkpoint=fs,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption,fsverity,fscompress,sysfs_path=/sys/devices/platform/soc/112b0000.ufshci
 
 
 

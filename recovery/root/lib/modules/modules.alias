@@ -78,6 +78,8 @@ alias of:N*T*Cmediatek,mt6375-battery_oc_throttling mtk_battery_oc_throttling
 alias of:N*T*Cmediatek,mt6375-battery_oc_throttlingC* mtk_battery_oc_throttling
 alias of:N*T*Cmediatek,mt6377-battery_oc_throttling mtk_battery_oc_throttling
 alias of:N*T*Cmediatek,mt6377-battery_oc_throttlingC* mtk_battery_oc_throttling
+alias of:N*T*Cmediatek,mt6379-battery-oc-throttling-1 mtk_battery_oc_throttling
+alias of:N*T*Cmediatek,mt6379-battery-oc-throttling-1C* mtk_battery_oc_throttling
 alias of:N*T*Cmediatek,mt6989-disp-dpc mtk_dpc
 alias of:N*T*Cmediatek,mt6989-disp-dpcC* mtk_dpc
 alias of:N*T*Cmediatek,mt6878-disp-dpc mtk_dpc
@@ -130,6 +132,8 @@ alias of:N*T*Cmediatek,mt6989-pcie pcie_mediatek_gen3
 alias of:N*T*Cmediatek,mt6989-pcieC* pcie_mediatek_gen3
 alias of:N*T*Cmediatek,charger,pe2 mtk_pep20
 alias of:N*T*Cmediatek,charger,pe2C* mtk_pep20
+alias of:N*T*Cmediatek,mtk-bp-thl mtk_bp_thl
+alias of:N*T*Cmediatek,mtk-bp-thlC* mtk_bp_thl
 alias of:N*T*Cmediatek,mt6681_pmic mt6681_core
 alias of:N*T*Cmediatek,mt6681_pmicC* mt6681_core
 alias i2c:mt6681_pmic mt6681_core
@@ -151,6 +155,8 @@ alias of:N*T*Cmediatek,mt6886-disp-pwm pwm_mtk_disp
 alias of:N*T*Cmediatek,mt6886-disp-pwmC* pwm_mtk_disp
 alias of:N*T*Cmediatek,mt6835-disp-pwm pwm_mtk_disp
 alias of:N*T*Cmediatek,mt6835-disp-pwmC* pwm_mtk_disp
+alias of:N*T*Cmediatek,mt6897-disp-pwm pwm_mtk_disp
+alias of:N*T*Cmediatek,mt6897-disp-pwmC* pwm_mtk_disp
 alias spi:p61 oplus_network_nfc_sn_ese
 alias of:N*T*Cmulti_reg-pmic oplus_camera_wl28681c2_regulator
 alias of:N*T*Cmulti_reg-pmicC* oplus_camera_wl28681c2_regulator
@@ -282,6 +288,8 @@ alias of:N*T*Cmediatek,mt6375-lbat-service pmic_lbat_service
 alias of:N*T*Cmediatek,mt6375-lbat-serviceC* pmic_lbat_service
 alias of:N*T*Cmediatek,mt6377-lbat-service pmic_lbat_service
 alias of:N*T*Cmediatek,mt6377-lbat-serviceC* pmic_lbat_service
+alias of:N*T*Cmediatek,mt6379-lbat-service-1 pmic_lbat_service
+alias of:N*T*Cmediatek,mt6379-lbat-service-1C* pmic_lbat_service
 alias of:N*T*Cmediatek,mt6685 mt6685_core
 alias of:N*T*Cmediatek,mt6685C* mt6685_core
 alias of:N*T*Cmediatek,mt6681-auxadc mt6681_auxadc
@@ -954,6 +962,10 @@ alias of:N*T*Cmediatek,usb-boost usb_boost
 alias of:N*T*Cmediatek,usb-boostC* usb_boost
 alias of:N*T*Cmediatek,mt6375-auxadc mt6375_auxadc
 alias of:N*T*Cmediatek,mt6375-auxadcC* mt6375_auxadc
+alias of:N*T*Cmediatek,mt6379-auxadc-1 mt6375_auxadc
+alias of:N*T*Cmediatek,mt6379-auxadc-1C* mt6375_auxadc
+alias of:N*T*Cmediatek,mt6379-auxadc-2 mt6375_auxadc
+alias of:N*T*Cmediatek,mt6379-auxadc-2C* mt6375_auxadc
 alias of:N*T*Cmediatek,low_battery_throttling mtk_low_battery_throttling
 alias of:N*T*Cmediatek,low_battery_throttlingC* mtk_low_battery_throttling
 alias of:N*T*Cmediatek,mt6577-uart 8250_mtk
@@ -1220,8 +1232,11 @@ alias i2c:rk826-fastcg oplus_chg_v2
 alias i2c:op10-fastcg oplus_chg_v2
 alias of:N*T*Cmediatek,charger oplus_chg_v2
 alias of:N*T*Cmediatek,chargerC* oplus_chg_v2
+alias i2c:oplus,byb-tps6128xd oplus_chg_v2
 alias of:N*T*Coplus-maxim oplus_chg_v2
 alias of:N*T*Coplus-maximC* oplus_chg_v2
+alias i2c:oplus,sc5891 oplus_chg_v2
+alias i2c:oplus,nu2112a oplus_chg_v2
 alias i2c:oplus,sc2201-ufcs oplus_chg_v2
 alias i2c:oplus,sc8547a oplus_chg_v2
 alias i2c:oplus,sc8547d oplus_chg_v2

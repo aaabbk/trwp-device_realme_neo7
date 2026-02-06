@@ -40,6 +40,12 @@ AB_OTA_PARTITIONS += \
     my_region \
     my_stock
 
+# Hardware
+BOARD_USES_MTK_HARDWARE := true
+
+# Platform
+TARGET_BOARD_PLATFORM := mt6989
+
 # Architecture
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
@@ -155,3 +161,6 @@ BOARD_FLASH_BLOCK_SIZE := 262144 # (BOARD_KERNEL_PAGESIZE * 64)
 BOARD_BOOTIMAGE_PARTITION_SIZE := 67108864 # boot/recovery/vendor_boot镜像的字节大小需原厂或手机完整提取出来的，不定义会报错
 
 BOARD_KERNEL_SEPARATED_DTBO := true
+
+# Device Fstab
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab

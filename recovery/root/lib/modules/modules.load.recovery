@@ -16,6 +16,7 @@ mtk_wdt.ko
 aee_hangdet.ko
 timer-mediatek.ko
 sec-rng.ko
+sec.ko
 device-apc-common.ko
 device-apc-mt6989.ko
 mtk-mbox-mailbox.ko
@@ -192,6 +193,7 @@ mt6375-battery.ko
 pwm-mtk-disp.ko
 phy-mtk-pcie.ko
 pcie-mediatek-gen3.ko
+mtk_bp_thl.ko
 leds-mtk.ko
 leds-mtk-disp.ko
 leds-mtk-pwm.ko
@@ -245,7 +247,6 @@ mtk_mdpm.ko
 mtk_rpmsg_mbox.ko
 mtk-mbox.ko
 mtk_tinysys_ipi.ko
-sec.ko
 uload_ind.ko
 load_track.ko
 aw8697.ko
@@ -255,4 +256,3 @@ oplus_secure_common.ko
 oplus_secure_guard.ko
 sg.ko
 oplus_bsp_mm_osvelte.ko
-oplus_procs_load.ko

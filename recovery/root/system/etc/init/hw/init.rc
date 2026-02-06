@@ -142,7 +142,7 @@ on late-init
     mkdir /data/vendor/touch/log 0771 system system
     chmod 0777 /data/vendor/touch/frameLog.log
     chmod 0777 /data/vendor/touch/touchHealthInfo.log
-    start vendor.touch_daemon
+    # start vendor.touch_daemon
 
     #ifdef OPLUS_FEATURE_TP_BASIC
     #qica.gu@BSP.TP, 2024/01/25, add for hbp4.0
@@ -159,9 +159,6 @@ on late-init
     chmod 660 /dev/hbp_core
     chmod 660 /dev/hbp0
     chmod 660 /dev/hbp1
-    chown root root /system/bin/hw/vendor-oplus-hardware-touch-V2-service
-    chmod 0777 system/bin/hw/vendor-oplus-hardware-touch-V2-service
-    start vendor.touch-aidl-1
     #endif
 
 #on property:sys.powerctl=*
@@ -337,6 +334,25 @@ on property:sys.usb.config=fastboot && property:sys.usb.ffs.ready=1 && property:
     write /sys/class/udc/musb-hdrc/device/cmode 1
     setprop sys.usb.state ${sys.usb.config}
 
+on property:vendor.firmware.tp.copy=1
+    chown root root /system/bin/touchDaemon
+    chown system system /dev/tcm_hbp0
+    chmod 0777 system/bin/touchDaemon
+    chmod 0777 dev/tcm_hbp0
+    mkdir /data/vendor 0771 system system
+    mkdir /data/vendor/touchconfig 0771 system system
+    mkdir /data/vendor/touch 0771 system system
+    mkdir /data/vendor/touch/log 0771 system system
+    chmod 0777 /data/vendor/touch/frameLog.log
+    chmod 0777 /data/vendor/touch/touchHealthInfo.log
+    start vendor.touch_daemon
+    chown root root /system/bin/hw/vendor-oplus-hardware-touch-V2-hbp5-service
+    chmod 0777 system/bin/hw/vendor-oplus-hardware-touch-V2-hbp5-service
+    chown root root /system/bin/hw/vendor-oplus-hardware-touch-V2-service
+    chmod 0777 system/bin/hw/vendor-oplus-hardware-touch-V2-service
+    start vendor.touch-aidl-1
+    start vendor.touch-aidl-2
+
 service hwservicemanager /system/bin/hwservicemanager
     onrestart setprop hwservicemanager.ready false
     writepid /dev/cpuset/system-background/tasks
@@ -366,6 +382,9 @@ service vendor.touch-aidl-1 /system/bin/hw/vendor-oplus-hardware-touch-V2-servic
     seclabel u:r:recovery:s0
     interface aidl vendor.oplus.hardware.touch.IOplusTouch/default
 
+service vendor.touch-aidl-2 /system/bin/hw/vendor-oplus-hardware-touch-V2-hbp5-service
+    user root
+    seclabel u:r:recovery:s0
 #endif
 
 #backup pstore
