@@ -49,3 +49,49 @@ on fs
     # ---------------- OTG 供电（与官方 init.rc 一致）----------------
     write /sys/class/power_supply/usb/otg_switch 1
     write /sys/class/oplus_chg/usb/otg_switch 1
+
+# ============================================================================
+# 【可选】sideload 官方 A/B OTA 需要的服务（默认全部注释，保证能开机）
+#
+# 启用方法：把下面整段取消注释后重新构建。启用后：
+#   1) servicemanager 提供 AIDL HAL 注册
+#   2) vendor.boot-default 提供 IBootControl（OTA 写入后切换 slot）
+#   3) vendor.health-default 提供电量（可选，不影响 OTA）
+#
+# 依赖文件已在设备树里：
+#   system/bin/servicemanager
+#   system/bin/hw/android.hardware.boot-service.mtk_recovery
+#   system/bin/hw/android.hardware.health-service.example_recovery
+#   system/lib64/ue_sideload/（28 个官方库，LD_LIBRARY_PATH 指向它）
+#   system/bin/update_engine_sideload_real + sbin/update_engine_sideload（wrapper）
+#
+# 注意：若 TWRP 自带的 init.rc 已定义 servicemanager 服务，取消注释会因
+#       duplicate service 报错，此时只取消 HAL 两段、把 servicemanager 段删掉。
+#
+# service servicemanager /system/bin/servicemanager
+#     class core
+#     user system
+#     group system readproc
+#     seclabel u:r:recovery:s0
+#
+# service vendor.boot-default /system/bin/hw/android.hardware.boot-service.mtk_recovery
+#     class early_hal
+#     user root
+#     group root
+#     environment LD_LIBRARY_PATH /system/lib64/ue_sideload
+#     seclabel u:r:recovery:s0
+#     interface aidl android.hardware.boot.IBootControl/default
+#
+# service vendor.health-default /system/bin/hw/android.hardware.health-service.example_recovery
+#     class hal
+#     user system
+#     group system
+#     capabilities WAKE_ALARM BLOCK_SUSPEND
+#     environment LD_LIBRARY_PATH /system/lib64/ue_sideload
+#     seclabel u:r:recovery:s0
+#
+# on boot
+#     start servicemanager
+#     start vendor.boot-default
+#     start vendor.health-default
+# ============================================================================

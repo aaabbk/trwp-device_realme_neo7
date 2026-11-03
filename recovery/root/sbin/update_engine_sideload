@@ -1,6 +1,0 @@
-#!/system/bin/sh
-# update_engine_sideload 包装器
-# 官方 rec 的二进制及其依赖库与 TWRP 自带的同名库版本不同，
-# 因此依赖库放在独立目录 /system/lib64/ue_sideload，避免覆盖 TWRP 的库导致 recovery 崩溃。
-export LD_LIBRARY_PATH=/system/lib64/ue_sideload
-exec /system/bin/update_engine_sideload_real "$@"

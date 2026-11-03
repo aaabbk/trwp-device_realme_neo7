@@ -1,0 +1,7 @@
+#!/system/bin/sh
+# TWRP 12.1 在 AB_OTA_UPDATER 构建下调用 /system/bin/update_engine_sideload
+# （见 bootable/recovery/install/install.cpp:273）。
+# 官方 rec 的二进制依赖库与 TWRP 自带库版本不同，故放在独立目录，
+# 由本包装器设置 LD_LIBRARY_PATH 后 exec，避免覆盖 TWRP 的 libc/libc++ 等。
+export LD_LIBRARY_PATH=/system/lib64/ue_sideload
+exec /system/bin/update_engine_sideload_real "$@"
