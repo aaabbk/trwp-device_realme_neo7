@@ -11,3 +11,6 @@ out/
 
 # 注意：prebuilt-dtb/dtb、lib/modules/*.ko、vendor/firmware/tp/* 是能开机所必需，
 # 不要忽略。
+
+# 文档只留本地，不进仓库
+*.md
