@@ -1,0 +1,160 @@
+name: Build TWRP 12.1 (vendor_boot) - RE6022L1
+
+# 手动触发。参数已按本机固定，无需填写。
+# 若想每次 push 自动构建，取消下面 push 段的注释（会消耗 Actions 额度）。
+on:
+  workflow_dispatch:
+    inputs:
+      build_target:
+        description: 'make 目标（本机固定 vendorbootimage）'
+        required: true
+        default: 'vendorbootimage'
+      make_clean:
+        description: '构建前是否 make clean（true/false）'
+        required: true
+        default: 'false'
+#  push:
+#    branches: [ main ]
+#    paths:
+#      - 'BoardConfig.mk'
+#      - 'device.mk'
+#      - 'twrp_RE6022L1.mk'
+#      - 'AndroidProducts.mk'
+#      - 'recovery/**'
+#      - '.github/workflows/build.yml'
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MANIFEST_URL: https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp
+  MANIFEST_BRANCH: twrp-12.1
+  DEVICE_PATH: device/realme/RE6022L1
+  DEVICE_NAME: RE6022L1
+  MAKEFILE_NAME: twrp_RE6022L1
+
+jobs:
+  build:
+    # 只允许仓库 owner 触发，避免别人白嫖你的 Actions 额度
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Display parameters
+        run: |
+          echo "::group::Parameters"
+          echo "Manifest : ${MANIFEST_URL} (${MANIFEST_BRANCH})"
+          echo "Device   : ${DEVICE_NAME} @ ${DEVICE_PATH}"
+          echo "Makefile : ${MAKEFILE_NAME}"
+          echo "Target   : ${{ github.event.inputs.build_target }}"
+          echo "::endgroup::"
+
+      - name: Check out device tree
+        uses: actions/checkout@v4
+        with:
+          path: device_tree
+
+      # 释放 runner 磁盘（TWRP 12.1 源码约需 10~15 GB）
+      - name: Cleanup runner
+        uses: rokibhasansagar/slimhub_actions@main
+
+      - name: Prepare build dependencies
+        run: |
+          sudo apt-get update
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -yq \
+            gperf gcc-multilib g++-multilib libc6-dev lib32ncurses-dev \
+            x11proto-core-dev libx11-dev tree lib32z-dev libgl1-mesa-dev \
+            libxml2-utils xsltproc bc ccache lib32readline-dev lib32z1-dev \
+            liblz4-tool libncurses-dev libsdl1.2-dev build-essential \
+            libgtk-3-dev libglu1-mesa-dev freeglut3-dev git lzop pngcrush \
+            schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp \
+            qemu-user-static libstdc++-10-dev libncurses6 python3 tar unzip
+
+      - name: Install OpenJDK 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Install repo
+        run: |
+          mkdir -p ~/bin
+          curl -s https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+          chmod a+x ~/bin/repo
+          sudo ln -sf ~/bin/repo /usr/bin/repo
+
+      - name: Init and sync TWRP 12.1
+        run: |
+          mkdir -p workspace
+          cd workspace
+          git config --global user.name  "github-actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+          repo init --depth=1 -u "${MANIFEST_URL}" -b "${MANIFEST_BRANCH}"
+          repo sync -j$(nproc) --force-sync --no-clone-bundle
+
+      - name: Place device tree into workspace
+        run: |
+          mkdir -p "workspace/$(dirname "${DEVICE_PATH}")"
+          cp -a device_tree "workspace/${DEVICE_PATH}"
+          rm -rf "workspace/${DEVICE_PATH}/.git"
+          ls -la "workspace/${DEVICE_PATH}" | head -20
+          echo "modules: $(ls workspace/${DEVICE_PATH}/recovery/root/lib/modules/*.ko | wc -l) 个"
+
+      - name: Set swap space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 12
+
+      - name: Build
+        run: |
+          cd workspace
+          source build/envsetup.sh
+          export ALLOW_MISSING_DEPENDENCIES=true
+          lunch "${MAKEFILE_NAME}-eng"
+          if [ "${{ github.event.inputs.make_clean }}" = "true" ]; then make clean; fi
+          mka ${{ github.event.inputs.build_target }} -j$(nproc)
+
+      - name: Verify output (header v4 + recovery 分片)
+        run: |
+          cd workspace
+          OUT="out/target/product/${DEVICE_NAME}"
+          echo "=== 产物 ==="
+          ls -l "${OUT}"/*.img || true
+          IMG=$(ls "${OUT}"/vendor_boot.img "${OUT}"/vendor-boot.img 2>/dev/null | head -1)
+          if [ -n "${IMG}" ]; then
+            echo "=== ${IMG} 大小 ==="
+            ls -l "${IMG}"
+            echo "=== header v4 / 分片 校验 ==="
+            python3 system/tools/mkbootimg/unpack_bootimg.py --boot_img "${IMG}" --out /tmp/vb --format info || true
+            ls -l /tmp/vb || true
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vendor_boot-${{ github.run_id }}
+          path: |
+            workspace/out/target/product/RE6022L1/vendor_boot.img
+            workspace/out/target/product/RE6022L1/vendor-boot.img
+            workspace/out/target/product/RE6022L1/*.zip
+          if-no-files-found: warn
+
+      - name: Publish to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            workspace/out/target/product/RE6022L1/vendor_boot.img
+            workspace/out/target/product/RE6022L1/vendor-boot.img
+            workspace/out/target/product/RE6022L1/*.zip
+          name: RE6022L1-${{ github.run_id }}
+          tag_name: ${{ github.run_id }}
+          body: |
+            TWRP 12.1 for realme Neo7 (RMX5060 / RE6022L1 / MT6989)
+            - Manifest: twrp-12.1
+            - Target  : ${{ github.event.inputs.build_target }}
+            - 刷入    : fastboot flash vendor_boot vendor_boot.img
+            - boot / init_boot 不动
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
