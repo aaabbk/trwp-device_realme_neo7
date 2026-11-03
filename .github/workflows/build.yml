@@ -1,7 +1,8 @@
 name: Build TWRP 12.1 (vendor_boot) - RE6022L1
 
-# 手动触发。参数已按本机固定，无需填写。
-# 若想每次 push 自动构建，取消下面 push 段的注释（会消耗 Actions 额度）。
+# 两种触发方式：
+#   1) 手动：Actions 页面点 Run workflow（参数可改）
+#   2) push 自动：只有改动设备树关键文件时才构建（省 Actions 额度）
 on:
   workflow_dispatch:
     inputs:
@@ -13,15 +14,18 @@ on:
         description: '构建前是否 make clean（true/false）'
         required: true
         default: 'false'
-#  push:
-#    branches: [ main ]
-#    paths:
-#      - 'BoardConfig.mk'
-#      - 'device.mk'
-#      - 'twrp_RE6022L1.mk'
-#      - 'AndroidProducts.mk'
-#      - 'recovery/**'
-#      - '.github/workflows/build.yml'
+  push:
+    branches: [ twrp-12.1 ]
+    paths:
+      - 'BoardConfig.mk'
+      - 'device.mk'
+      - 'Android.mk'
+      - 'AndroidProducts.mk'
+      - 'twrp_RE6022L1.mk'
+      - 'recovery/**'
+      - 'prebuilt/**'
+      - 'prebuilt-dtb/**'
+      - '.github/workflows/build.yml'
 
 concurrency:
   group: build-${{ github.ref }}
@@ -33,6 +37,9 @@ env:
   DEVICE_PATH: device/realme/RE6022L1
   DEVICE_NAME: RE6022L1
   MAKEFILE_NAME: twrp_RE6022L1
+  # push 触发时没有 inputs，用默认值兜底
+  BUILD_TARGET: ${{ github.event.inputs.build_target || 'vendorbootimage' }}
+  MAKE_CLEAN: ${{ github.event.inputs.make_clean || 'false' }}
 
 jobs:
   build:
@@ -48,7 +55,7 @@ jobs:
           echo "Manifest : ${MANIFEST_URL} (${MANIFEST_BRANCH})"
           echo "Device   : ${DEVICE_NAME} @ ${DEVICE_PATH}"
           echo "Makefile : ${MAKEFILE_NAME}"
-          echo "Target   : ${{ github.event.inputs.build_target }}"
+          echo "Target   : ${BUILD_TARGET}"
           echo "::endgroup::"
 
       - name: Check out device tree
@@ -125,8 +132,8 @@ jobs:
           source build/envsetup.sh
           export ALLOW_MISSING_DEPENDENCIES=true
           lunch "${MAKEFILE_NAME}-eng"
-          if [ "${{ github.event.inputs.make_clean }}" = "true" ]; then make clean; fi
-          mka ${{ github.event.inputs.build_target }} -j$(nproc)
+          if [ "${MAKE_CLEAN}" = "true" ]; then make clean; fi
+          mka ${BUILD_TARGET} -j$(nproc)
 
       - name: Verify output (header v4 + recovery 分片)
         run: |
@@ -165,7 +172,7 @@ jobs:
           body: |
             TWRP 12.1 for realme Neo7 (RMX5060 / RE6022L1 / MT6989)
             - Manifest: twrp-12.1
-            - Target  : ${{ github.event.inputs.build_target }}
+            - Target  : vendorbootimage
             - 刷入    : fastboot flash vendor_boot vendor_boot.img
             - boot / init_boot 不动
         env:
