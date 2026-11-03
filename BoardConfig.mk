@@ -33,9 +33,20 @@ TARGET_USES_64_BIT_BINDER := true
 TARGET_SUPPORTS_64_BIT_APPS := true
 
 # ================================================================ 平台 / 设备
+# MediaTek MT6989（天玑 9300+），依据：
+#   - dtb: androidboot.hardware=mt6989、mediatek,MT6989
+#   - 官方 fstab/init.rc 的 mt6989/mtk-msdc 路径
+#   - vendor_boot 内 270 个 .ko 全为 MTK 平台模块
 TARGET_BOARD_PLATFORM := mt6989
 TARGET_BOOTLOADER_BOARD_NAME := RE6022L1
 TARGET_OTA_ASSERT_DEVICE := RE6022L1,RMX5060,ossi
+
+# ---------------- MTK 平台显式声明 ----------------
+# BOARD_USES_MTK_HARDWARE=true 让 TWRP 12.1 启用 MTK 特定处理
+# （/dev/block/platform/mtk-msdc.0 等 MTK 块设备路径、MTK 亮度/分区处理）。
+# 不声明时 TWRP 走通用路径，MTK 设备可能出现分区/亮度找不到的问题。
+BOARD_USES_MTK_HARDWARE := true
+BOARD_HAS_MTK_HARDWARE := true
 
 # ================================================================ GKI / vendor_boot (header v4)
 BOARD_BOOT_HEADER_VERSION := 4
