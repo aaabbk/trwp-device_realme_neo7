@@ -1,50 +1,34 @@
 #
 # init.recovery.mt6989.rc - realme Neo7 (RE6022L1 / MT6989)
 #
-# 按 TWRP 12.1 设备树惯例：平台级 init 补丁，文件名用 TARGET_BOARD_PLATFORM。
-# recovery 环境 ro.hardware=mt6989（来自 cmdline androidboot.hardware=mt6989）。
+# 原则：**能开机第一**。本文件只放 TWRP 启动/使用必须的设置，
+# 任何"可选功能"（sideload OTA 的 HAL 等）都不在这里自动启动，
+# 避免 init 解析/服务启动失败影响 recovery 启动。
 #
-# 本文件把官方 rec 的两类内容合并进来（不单独出 ueventd.rc，避免覆盖 TWRP 自带那份）：
-#   1) 官方 ueventd.rc 里 TWRP 需要的设备节点权限 → 转成 on init 的 chown/chmod
-#   2) 官方 init.rc 里 recovery 需要的 USB / 触摸 / OTG 设置
-#
-# 【模块加载不在这里写】
-#   原厂 270 个 .ko + modules.load.recovery 已随设备树放进 ramdisk 的 /lib/modules
-#   （recovery/root/lib/modules/），AOSP init 在 recovery 模式会自动按
-#   modules.load.recovery 加载 260 个模块，不需要手动 insmod。
-#
-# 【触摸固件】
-#   原厂 /vendor/firmware/tp/* 已随设备树放进 ramdisk（recovery/root/vendor/firmware/tp/）。
-#   若触摸仍无效，本机固件可能在 /odm/firmware/tp（官方 recovery 也是从 /odm 拷的）。
-#
-# 官方 rec 的 init.rc 是 Oplus/MTK 合并过的平台版本（phoenix_recovery、aging、
-# boot/health HAL、snapuserd 等服务），那套只给官方 recovery 用，TWRP 不照搬。
+# 模块加载不在这里写：原厂 270 个 .ko + modules.load.recovery 已随设备树
+# 放进 ramdisk 的 /lib/modules，AOSP init 在 recovery 模式自动加载。
 #
 
 on early-init
-    # 避免 display/touch 模块加载异常时因 oops 直接重启，便于 adb 抓日志
+    # display/touch 模块异常时不要因 oops 直接重启，便于 adb 抓日志
     write /proc/sys/kernel/panic_on_oops 0
 
 on init
     # ---------------- 显示 ----------------
-    # 官方 ueventd.rc: /dev/graphics/* 0660 root graphics（TWRP 的 minui 打开 /dev/graphics/fb0）
+    # 官方 ueventd.rc: /dev/graphics/* 0660 root graphics（TWRP minui 打开 fb0）
     chown root graphics /dev/graphics
     chmod 0770 /dev/graphics
     chown root graphics /dev/graphics/fb0
     chmod 0660 /dev/graphics/fb0
 
     # ---------------- 输入 ----------------
-    # 官方 ueventd.rc: /dev/input/* 0660 root input
     chmod 0770 /dev/input
     chown root input /dev/input/*
     chmod 0660 /dev/input/*
-
-    # 输入设备 sysfs（官方 ueventd.rc 同款，触摸/按键参数需要）
     chmod 0660 /sys/devices/virtual/input/input*/enable
     chmod 0660 /sys/devices/virtual/input/input*/poll_delay
 
     # ---------------- 触摸驱动节点（Synaptics TCM2 / S3910，HBP 4.0）----------------
-    # 官方 init.rc 里对这些节点做 chmod/chown；这里在 init 阶段统一处理
     chown system system /dev/tcm0
     chmod 0660 /dev/tcm0
     chown system system /dev/tcm_hbp0
@@ -59,37 +43,9 @@ on init
 on fs
     # ---------------- USB gadget ----------------
     # 实机 ls /sys/class/udc = "11201000.usb0  11211000.usb1"
-    # 官方 recovery 的 USB ID：VID 18D1 / adb PID D001 / fastboot PID 4EE0
     setprop sys.usb.configfs 1
     setprop sys.usb.controller "11201000.usb0"
 
     # ---------------- OTG 供电（与官方 init.rc 一致）----------------
     write /sys/class/power_supply/usb/otg_switch 1
     write /sys/class/oplus_chg/usb/otg_switch 1
-
-# ============================================================================
-# 官方 rec 的两个 HAL（sideload 官方 A/B OTA 时需要 boot control；电量显示用 health）
-# 依赖库放在 /system/lib64/ue_sideload（独立目录），避免覆盖 TWRP 自带同名库。
-# 说明：AIDL HAL 需要 servicemanager 运行；TWRP 的 init.rc 若未启动它，
-#       这两个服务会启动失败（只影响 sideload OTA，不影响 TWRP 正常使用）。
-# ============================================================================
-
-service vendor.boot-default /system/bin/hw/android.hardware.boot-service.mtk_recovery
-    class early_hal
-    user root
-    group root
-    environment LD_LIBRARY_PATH /system/lib64/ue_sideload
-    seclabel u:r:recovery:s0
-    interface aidl android.hardware.boot.IBootControl/default
-
-service vendor.health-default /system/bin/hw/android.hardware.health-service.example_recovery
-    class hal
-    user system
-    group system
-    capabilities WAKE_ALARM BLOCK_SUSPEND
-    environment LD_LIBRARY_PATH /system/lib64/ue_sideload
-    seclabel u:r:recovery:s0
-
-on boot
-    start vendor.boot-default
-    start vendor.health-default
