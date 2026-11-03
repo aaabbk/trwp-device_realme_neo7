@@ -1,0 +1,11 @@
+#
+# init.recovery.common.rc - 兼容文件（不重复逻辑）
+#
+# 官方 rec 的 prop.default 里 ro.board.platform=common，
+# 其 init.rc 写的是 import /init.recovery.${ro.board.platform}.rc。
+# TWRP 12.1 的 init 一般按 ro.hardware（=mt6989，来自 cmdline）拼接，
+# 但不同版本可能按 board.platform；这里只做转发，保证两种拼名都能命中。
+#
+# init 对同一文件只解析一次，因此即便两个文件都被 import 也不会重复执行。
+#
+import /init.recovery.mt6989.rc

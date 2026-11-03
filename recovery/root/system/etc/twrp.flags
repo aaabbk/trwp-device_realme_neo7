@@ -1,0 +1,39 @@
+#
+# twrp.flags - realme Neo7 (RE6022L1 / MT6989)
+#
+# TWRP 12.1 在解析完 fstab 后读取 /etc/twrp.flags，用于覆盖分区的 TWRP 行为。
+# 格式：段首行为挂载点，随后以 flags= 开头的行给出分号分隔的 TWRP flags。
+# 只对 twrp.fstab 中已存在的挂载点生效（twrp.fstab 里没有 /super，故此处也不写）。
+#
+# 说明：
+#   - TWRP 对 emmc 类型分区默认视为 image，可备份/可刷写；此处显式声明更直观。
+#   - 不要把 /cache（= oplusreserve2）标记 wipedata，那是 Oplus 保留区。
+#   - 该文件为 TWRP 侧配置，原厂 vendor_boot 中没有对应物（原厂用的是 phoenix recovery）。
+#
+
+/boot
+    flags=display="Boot";backup=1;flashimg=1
+
+/vendor_boot
+    flags=display="Vendor Boot";backup=1;flashimg=1
+
+/init_boot
+    flags=display="Init Boot";backup=1;flashimg=1
+
+/dtbo
+    flags=display="DTBO";backup=1;flashimg=1
+
+/system_root
+    flags=display="System"
+
+/data
+    flags=display="Data";wipeingui;wipedata
+
+/metadata
+    flags=display="Metadata"
+
+/cache
+    flags=display="Cache";wipeingui
+
+/persist
+    flags=display="Persist"

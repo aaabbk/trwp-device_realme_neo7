@@ -1,0 +1,89 @@
+#
+# twrp.fstab - realme Neo7 (RE6022L1 / MT6989 / Android 14)
+#
+# ============================================================================
+# 【唯一依据】你的官方 vendor_boot.img 解包出的两份 fstab：
+#   A = ramdisk/system/etc/recovery.fstab          （官方恢复模式用的 fstab）
+#   B = ramdisk/first_stage_ramdisk/fstab.mt6989   （第一段挂载用的 fstab）
+# 再用 1.txt 的实测分区表确认"哪些分区真实存在"。
+# 本文件不采用任何第三方设备树的分区表；每条都在行尾注明来源。
+#
+# 语法：<mount_point> <fstype> <device> [flags]
+#   - 原厂 A 里 logical 分区写成 "system /system ext4|erofs ..."（分区名而非路径），
+#     TWRP 需要块设备路径，故这里写成 /dev/block/by-name/<name>，
+#     并保留 logical + slotselect 由 TWRP 通过 super 自动映射。
+#   - 原厂 A 对 system/vendor/product/odm/... 都给了 ext4 与 erofs 两条记录，
+#     这里照此保留两条，让 TWRP 按实际文件系统尝试。
+#   - A/B 分区不写 _a/_b 后缀，由 slotselect 选择当前槽。
+#   - 原厂 A 有 /dev/block/by-name/recovery 条目，但 1.txt 实测没有 recovery 分区
+#     （recovery 在 vendor_boot 里）→ 本文件不写 /recovery。
+# ============================================================================
+#
+
+# ============================ 引导 / 镜像分区（TWRP 视为 image：可备份、可刷写）
+/dev/block/by-name/boot /boot emmc defaults defaults                                  # A: boot
+/dev/block/by-name/vendor_boot /vendor_boot emmc defaults defaults                    # B: vendor_boot
+/dev/block/by-name/init_boot /init_boot emmc defaults defaults                        # B: init_boot
+/dev/block/by-name/dtbo /dtbo emmc defaults defaults                                  # A: dtbo
+/dev/block/by-name/vbmeta /vbmeta emmc defaults defaults                              # A: vbmeta
+/dev/block/by-name/vbmeta_system /vbmeta_system emmc defaults defaults                # A: vbmeta_system
+/dev/block/by-name/vbmeta_vendor /vbmeta_vendor emmc defaults defaults                # A: vbmeta_vendor
+/dev/block/by-name/lk /bootloader emmc defaults defaults                              # A: lk → /bootloader
+/dev/block/by-name/misc /misc emmc defaults defaults                                  # A: misc
+/dev/block/by-name/para /para emmc defaults defaults                                  # A: para
+/dev/block/by-name/boot_para /boot_para emmc defaults defaults                        # B: boot_para
+/dev/block/by-name/cdt_engineering /cdt_engineering emmc defaults defaults            # A: cdt_engineering
+/dev/block/by-name/frp /persistent emmc defaults defaults                             # A: frp → /persistent
+
+# ============================ logical 只读分区（原厂 A/B 均有，A 给了 erofs+ext4 两条）
+/dev/block/by-name/system /system_root erofs ro wait,slotselect,logical               # A/B: system
+/dev/block/by-name/system /system_root ext4 ro wait,slotselect,logical
+/dev/block/by-name/system_ext /system_ext erofs ro wait,slotselect,logical            # A/B
+/dev/block/by-name/system_ext /system_ext ext4 ro wait,slotselect,logical
+/dev/block/by-name/product /product erofs ro wait,slotselect,logical                  # A/B
+/dev/block/by-name/product /product ext4 ro wait,slotselect,logical
+/dev/block/by-name/vendor /vendor erofs ro wait,slotselect,logical                    # A/B
+/dev/block/by-name/vendor /vendor ext4 ro wait,slotselect,logical
+/dev/block/by-name/odm /odm erofs ro wait,slotselect,logical                          # A/B
+/dev/block/by-name/odm /odm ext4 ro wait,slotselect,logical
+/dev/block/by-name/vendor_dlkm /vendor_dlkm erofs ro wait,slotselect,logical           # A/B
+/dev/block/by-name/odm_dlkm /odm_dlkm erofs ro wait,slotselect,logical                 # A/B
+/dev/block/by-name/system_dlkm /system_dlkm erofs ro wait,slotselect,logical           # A/B
+
+# 原厂 A/B 里还有 10 个 my_* logical 分区；它们由 overlay 叠加到 product/system_ext，
+# TWRP 一般不需要挂载。如要在"挂载"界面显示，照下面格式追加（全部只读）：
+# /dev/block/by-name/my_product     /my_product     erofs ro wait,slotselect,logical
+# /dev/block/by-name/my_engineering /my_engineering erofs ro wait,slotselect,logical
+# /dev/block/by-name/my_company     /my_company     erofs ro wait,slotselect,logical
+# /dev/block/by-name/my_carrier     /my_carrier     erofs ro wait,slotselect,logical
+# /dev/block/by-name/my_region      /my_region      erofs ro wait,slotselect,logical
+# /dev/block/by-name/my_heytap      /my_heytap      erofs ro wait,slotselect,logical
+# /dev/block/by-name/my_stock       /my_stock       erofs ro wait,slotselect,logical
+# /dev/block/by-name/my_preload     /my_preload     erofs ro wait,slotselect,logical
+# /dev/block/by-name/my_bigball     /my_bigball     erofs ro wait,slotselect,logical
+# /dev/block/by-name/my_manifest    /my_manifest    erofs ro wait,slotselect,logical
+
+# 注：原厂两份 fstab 都没有 /super 条目（TWRP 通过 liblp 自动映射 logical 分区），
+#     故这里也不写 /super，避免与原厂结构不一致。
+
+# ============================ 用户数据 / 元数据
+# /data：原厂 A/B 为 f2fs + FBE v2（fileencryption + keydirectory=/metadata/vold/metadata_encryption）。
+# TWRP 首版不解密，故去掉 fileencryption/keydirectory 参数，只保留挂载所需 flags；
+# 带 formattable 以便必要时格式化 /data。
+/dev/block/by-name/userdata /data f2fs noatime,nosuid,nodev,discard,noflush_merge,fsync_mode=nobarrier wait,check,formattable   # A/B: userdata
+/dev/block/by-name/metadata /metadata f2fs noatime,nosuid,nodev,discard wait                                                   # A/B: metadata
+
+# ============================ 缓存 / 持久化
+# 原厂 A：oplusreserve2 → /cache（256 MiB，Oplus 保留区）。可挂载，但不要格式化。
+/dev/block/by-name/oplusreserve2 /cache ext4 noatime,nosuid,nodev,noauto_da_alloc,discard wait,check   # A: oplusreserve2
+# 原厂 A/B 都把 persist 挂到 /mnt/vendor/persist；TWRP 惯例挂 /persist（同一分区）。
+/dev/block/by-name/persist /persist ext4 noatime,nosuid,nodev,noauto_da_alloc,commit=1,nodelalloc wait # A/B: persist
+
+# ============================ 外置存储（照原厂写法）
+# A: /devices/platform/externdevice* ... voldmanaged=sdcard1:auto
+# A: /devices/platform/11200000.usb3_xhci* ... voldmanaged=usbotg:auto
+# B 另有 USB2 控制器（11201000.usb0 / 11211000.usb1），一并保留
+/devices/platform/externdevice* auto auto defaults voldmanaged=sdcard1:auto              # A
+/devices/platform/11200000.usb3_xhci* auto vfat defaults voldmanaged=usbotg:auto         # A
+/devices/platform/soc/11201000.usb0/11200000.xhci* auto vfat defaults voldmanaged=usbotg:auto   # B
+/devices/platform/soc/11211000.usb1/11210000.xhci* auto vfat defaults voldmanaged=usbotg:auto   # B
