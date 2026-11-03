@@ -56,6 +56,18 @@ jobs:
         with:
           path: device_tree
 
+      # 自证：打印本次实际使用的 commit 与关键配置，避免"重跑旧 run"时误判
+      - name: Show checked-out commit
+        run: |
+          cd device_tree
+          echo "::group::Device tree revision"
+          git log --oneline -3
+          echo "--- device.mk ---"
+          grep -n "PRODUCT_SHIPPING_API_LEVEL" device.mk || true
+          echo "--- vendorsetup.sh ---"
+          cat vendorsetup.sh
+          echo "::endgroup::"
+
       # 释放 runner 磁盘（TWRP 12.1 源码约需 10~15 GB）
       - name: Cleanup runner
         uses: rokibhasansagar/slimhub_actions@main
