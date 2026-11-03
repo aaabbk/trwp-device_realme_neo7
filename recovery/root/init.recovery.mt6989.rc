@@ -9,10 +9,6 @@
 # 放进 ramdisk 的 /lib/modules，AOSP init 在 recovery 模式自动加载。
 #
 
-on early-init
-    # display/touch 模块异常时不要因 oops 直接重启，便于 adb 抓日志
-    write /proc/sys/kernel/panic_on_oops 0
-
 on init
     # ---------------- 显示 ----------------
     # 官方 ueventd.rc: /dev/graphics/* 0660 root graphics（TWRP minui 打开 fb0）
@@ -39,6 +35,12 @@ on init
     chmod 0660 /dev/hbp0
     chown system system /dev/hbp1
     chmod 0660 /dev/hbp1
+
+on boot
+    # TWRP 的 etc/init.rc 在 on init 里把 panic_on_oops 写成 1，
+    # 这里在更晚的 on boot 覆盖回 0：模块异常时不要因 oops 直接重启，便于 adb 抓日志。
+    # （本文件由 TWRP init.rc 第 6 行 import，同级 action 先于 TWRP 自身 on boot 执行）
+    write /proc/sys/kernel/panic_on_oops 0
 
 on fs
     # ---------------- USB gadget ----------------
