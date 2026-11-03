@@ -66,3 +66,30 @@ on fs
     # ---------------- OTG 供电（与官方 init.rc 一致）----------------
     write /sys/class/power_supply/usb/otg_switch 1
     write /sys/class/oplus_chg/usb/otg_switch 1
+
+# ============================================================================
+# 官方 rec 的两个 HAL（sideload 官方 A/B OTA 时需要 boot control；电量显示用 health）
+# 依赖库放在 /system/lib64/ue_sideload（独立目录），避免覆盖 TWRP 自带同名库。
+# 说明：AIDL HAL 需要 servicemanager 运行；TWRP 的 init.rc 若未启动它，
+#       这两个服务会启动失败（只影响 sideload OTA，不影响 TWRP 正常使用）。
+# ============================================================================
+
+service vendor.boot-default /system/bin/hw/android.hardware.boot-service.mtk_recovery
+    class early_hal
+    user root
+    group root
+    environment LD_LIBRARY_PATH /system/lib64/ue_sideload
+    seclabel u:r:recovery:s0
+    interface aidl android.hardware.boot.IBootControl/default
+
+service vendor.health-default /system/bin/hw/android.hardware.health-service.example_recovery
+    class hal
+    user system
+    group system
+    capabilities WAKE_ALARM BLOCK_SUSPEND
+    environment LD_LIBRARY_PATH /system/lib64/ue_sideload
+    seclabel u:r:recovery:s0
+
+on boot
+    start vendor.boot-default
+    start vendor.health-default
