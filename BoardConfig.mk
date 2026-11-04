@@ -56,9 +56,11 @@ BOARD_KERNEL_IMAGE_NAME := Image
 BOARD_USES_GENERIC_KERNEL_IMAGE := true
 BOARD_KERNEL_SEPARATED_DTBO := true
 
-# recovery 资源进 vendor_boot（本机唯一可行路线）+ v4 独立 recovery 分片
+# recovery 资源进 vendor_boot（本机唯一可行路线）
+# 只设 TWRP 支持的这个变量；BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT 是
+# AOSP build/make 的独立分片变量，TWRP 参考设备树（xiaomi yuechu）不使用，
+# 它会改变 recovery ramdisk 的构建路径，故不设。
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
-BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
 # 禁止（GKI 下 AOSP board_config.mk 直接报错）：
 # BOARD_USES_RECOVERY_AS_BOOT := true
 
@@ -161,7 +163,8 @@ TW_FRAMERATE := 120
 # ================================================================ Recovery
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/twrp.fstab
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888   # 花屏/偏色时改 BGRA_8888
-TARGET_RECOVERY_DEVICE_DIRS += $(DEVICE_PATH)
+# 不使用 TARGET_RECOVERY_DEVICE_DIRS：TWRP 会自动拷贝 device tree 的 recovery/root，
+# 再设这个 AOSP 变量会让同一目录被重复处理。
 
 # ================================================================ TWRP UI
 TW_THEME := portrait_hdpi
