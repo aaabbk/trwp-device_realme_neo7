@@ -49,35 +49,52 @@ BOARD_USES_MTK_HARDWARE := true
 BOARD_HAS_MTK_HARDWARE := true
 
 # ================================================================ GKI / vendor_boot (header v4)
-BOARD_BOOT_HEADER_VERSION := 4
-BOARD_KERNEL_PAGESIZE := 4096
-BOARD_KERNEL_BASE := 0x40000000
-BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2
-
-# GKI 语义：recovery 不进 boot.img
+# 本段写法对齐同平台参考树（MTK + TWRP 12.1 + vendor_boot）:
+#   https://github.com/mytiantian001/android_device_xiaomi_yuechu_twrp
+TARGET_NO_KERNEL := true
+BOARD_KERNEL_IMAGE_NAME := Image
 BOARD_USES_GENERIC_KERNEL_IMAGE := true
+BOARD_KERNEL_SEPARATED_DTBO := true
 
-# 把 recovery 资源放进 vendor_boot —— 本机唯一可行路线
+# recovery 资源进 vendor_boot（本机唯一可行路线）+ v4 独立 recovery 分片
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
-# v4 设备：做成独立 recovery ramdisk 分片（TWRP 内 repack 依赖 vendor_ramdisk_recovery.cpio）
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
-
-# 禁止：GKI 下与 BOARD_USES_RECOVERY_AS_BOOT 互斥（AOSP board_config.mk L931-946 直接报错）
+# 禁止（GKI 下 AOSP board_config.mk 直接报错）：
 # BOARD_USES_RECOVERY_AS_BOOT := true
 
-# TWRP 的 vendor/twrp/build/tasks/kernel.mk:108 要求定义该变量（即使不打包 kernel）。
-# 本机走 vendor_boot 方案、不含 kernel，这里只满足构建检查；aarch64 GKI 的镜像是 Image。
-BOARD_KERNEL_IMAGE_NAME := Image
+# ---- boot header 参数：严格对齐官方 vendor_boot.img 头（逐字节解析结果）----
+#   kernel_addr 0x40000000 = BASE 0x3FFF8000 + KERNEL_OFFSET 0x00008000
+#   ramdisk_addr 0x66F00000 = BASE + RAMDISK_OFFSET 0x26F08000
+#   tags/dtb_addr 0x47C80000 = BASE + TAGS/DTB_OFFSET 0x07C88000
+BOARD_BOOT_HEADER_VERSION := 4
+BOARD_PAGE_SIZE := 4096
+BOARD_KERNEL_PAGESIZE := 4096
+BOARD_KERNEL_BASE := 0x3FFF8000
+BOARD_KERNEL_OFFSET := 0x00008000
+BOARD_RAMDISK_OFFSET := 0x26F08000
+BOARD_TAGS_OFFSET := 0x07C88000
+BOARD_DTB_OFFSET := 0x07C88000
+BOARD_HEADER_SIZE := 2128
+BOARD_DTB_SIZE := 462480
+BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2
+BOARD_VENDOR_CMDLINE := "bootopt=64S3,32N2,64N2 androidboot.selinux=permissive"
 
-# 显式声明"无内核"：vendor_boot 方案不打包 kernel 与 boot.img，
-# 避免 TWRP kernel.mk 继续要求 TARGET_PREBUILT_KERNEL / 内核源码。
-TARGET_NO_KERNEL := true
+# 官方 vendor_boot 的 vendor_ramdisk 是 LZ4 legacy 压缩（文件头魔数 0x184C2102），
+# 与参考树一致使用 LZ4，保证 bootloader 侧解压行为与官方一致。
+BOARD_RAMDISK_USE_LZ4 := true
 
-# vendor_boot 必须打包官方 dtb（原样复用，不得重编）；
-# AOSP 会用该目录生成 dtb.img 并通过 mkbootimg --dtb 打进 vendor_boot。
-BOARD_PREBUILT_DTBIMAGE_DIR := $(DEVICE_PATH)/prebuilt-dtb
+# 官方 dtb（原样复用，禁止重编）
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt-dtb/dtb
 
-BOARD_MKBOOTIMG_ARGS += --header_version 4 --pagesize 4096
+BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
+BOARD_MKBOOTIMG_ARGS += --pagesize $(BOARD_PAGE_SIZE) --board ""
+BOARD_MKBOOTIMG_ARGS += --base $(BOARD_KERNEL_BASE)
+BOARD_MKBOOTIMG_ARGS += --kernel_offset $(BOARD_KERNEL_OFFSET)
+BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
+BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_TAGS_OFFSET)
+BOARD_MKBOOTIMG_ARGS += --dtb_offset $(BOARD_DTB_OFFSET)
+BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
+BOARD_MKBOOTIMG_ARGS += --vendor_cmdline $(BOARD_VENDOR_CMDLINE)
 
 # ================================================================ 分区大小
 # 实测（/proc/partitions，1 KiB blocks × 1024）
@@ -117,6 +134,25 @@ BOARD_AVB_ENABLE := false
 # BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 # BOARD_AVB_ALGORITHM := SHA256_RSA2048
 # BOARD_AVB_KEY_PATH := vendor/twrp/build/target/product/security/testkey
+
+# ================================================================ 设备形态 / 构建健壮性
+# 本机无独立 recovery 分区（1.txt 实测），recovery 在 vendor_boot
+TARGET_NO_RECOVERY := true
+TARGET_USES_UEFI := true
+TARGET_IS_64_BIT := true
+TARGET_BOARD_SUFFIX := _64
+BOARD_HAS_LARGE_FILESYSTEM := true
+BOARD_SUPPRESS_SECURE_ERASE := true
+
+# 最小 manifest 构建，缺依赖时不中断（参考树同款）
+ALLOW_MISSING_DEPENDENCIES := true
+BUILD_BROKEN_DUP_RULES := true
+
+# 屏幕（公开参数：6.78" 2780x1264，约 450dpi；上机可再校准）
+TARGET_SCREEN_HEIGHT := 2780
+TARGET_SCREEN_WIDTH := 1264
+TARGET_SCREEN_DENSITY := 450
+TW_FRAMERATE := 120
 
 # ================================================================ Recovery
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/twrp.fstab
