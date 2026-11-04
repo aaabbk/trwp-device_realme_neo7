@@ -148,10 +148,14 @@ BOARD_SUPPRESS_SECURE_ERASE := true
 ALLOW_MISSING_DEPENDENCIES := true
 BUILD_BROKEN_DUP_RULES := true
 
-# 屏幕（公开参数：6.78" 2780x1264，约 450dpi；上机可再校准）
+# 屏幕
+#   分辨率/尺寸：公开参数 6.78" AMOLED，2780x1264（物理 PPI 450）
+#   密度：实机的 ro.sf.lcd_density = 560（Oplus 逻辑密度，不是物理 PPI）；
+#         官方 recovery 也从 /odm/build.prop 读它决定 UI 缩放，故以 560 为准。
+#   刷新率：120Hz（部分标称 144Hz，TW 用 120 足够）
 TARGET_SCREEN_HEIGHT := 2780
 TARGET_SCREEN_WIDTH := 1264
-TARGET_SCREEN_DENSITY := 450
+TARGET_SCREEN_DENSITY := 560
 TW_FRAMERATE := 120
 
 # ================================================================ Recovery
