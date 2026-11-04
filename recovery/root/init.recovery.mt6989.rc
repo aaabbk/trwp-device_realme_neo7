@@ -37,10 +37,9 @@ on init
     chmod 0660 /dev/hbp1
 
 on boot
-    # TWRP 的 etc/init.rc 在 on init 里把 panic_on_oops 写成 1，
-    # 这里在更晚的 on boot 覆盖回 0：模块异常时不要因 oops 直接重启，便于 adb 抓日志。
-    # （本文件由 TWRP init.rc 第 6 行 import，同级 action 先于 TWRP 自身 on boot 执行）
-    write /proc/sys/kernel/panic_on_oops 0
+    # 不覆盖 panic_on_oops：沿用 TWRP 默认（panic on oops = 1）。
+    # 之前在这里写 0 是为了 oops 时卡住抓日志，但那会让人卡死在 recovery，
+    # 反而需要长按电源。恢复 TWRP 默认行为：出错就 panic/重启。
 
     # 显式拉起 adb：TWRP 的 init.rc 只在 ro.debuggable=1 时自动设 sys.usb.config，
     # 参考树（xiaomi yuechu）也是在这里显式设置，避免 adb 不可用。
