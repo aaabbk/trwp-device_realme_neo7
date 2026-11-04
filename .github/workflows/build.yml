@@ -126,6 +126,20 @@ jobs:
         with:
           swap-size-gb: 12
 
+      # TWRP 12.1 自身会把 HAL manifest / selinux contexts / vendor hw 二进制
+      # 安装到 recovery root 的 vendor/（etc/Android.mk 3 处 + prebuilt/Android.mk 4 处），
+      # 而 AOSP 的 root->recovery rsync 需要放置 vendor symlink，
+      # 目标是非空目录 -> rsync code 23: could not make way for new symlink: root/vendor。
+      # 构建前把 TWRP 的安装路径改到 system/vendor（recovery 内 /vendor 指向 /system/vendor）。
+      - name: Patch TWRP vendor path conflict
+        run: |
+          cd workspace
+          sed -i 's|$(TARGET_RECOVERY_ROOT_OUT)/vendor|$(TARGET_RECOVERY_ROOT_OUT)/system/vendor|g' \
+            bootable/recovery/etc/Android.mk \
+            bootable/recovery/prebuilt/Android.mk
+          echo "=== patched (should be system/vendor) ==="
+          grep -n 'TARGET_RECOVERY_ROOT_OUT)/.*vendor' bootable/recovery/etc/Android.mk bootable/recovery/prebuilt/Android.mk | head -12
+
       - name: Build
         run: |
           cd workspace
