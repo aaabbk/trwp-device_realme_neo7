@@ -123,6 +123,16 @@ TARGET_USERIMAGES_USE_F2FS := true
 TARGET_USES_MKE2FS := true
 BOARD_USES_METADATA_PARTITION := true
 
+# 分区镜像类型 / 输出目录（参考 Civi 3 树同款写法）
+# 缺少这段时 AOSP 对 vendor 等分区的处理与参考树不同：ramdisk root 里 vendor
+# 会变成 symlink，与 TWRP 装到 recovery/root/vendor 的内容冲突，
+# 表现为 rsync code 23: could not make way for new symlink: root/vendor。
+BOARD_USES_VENDOR_DLKMIMAGE := true
+BOARD_MAIN_PARTITION_LIST := system system_ext product vendor vendor_dlkm odm
+BOARD_PARTITION_LIST := $(call to-upper, $(BOARD_MAIN_PARTITION_LIST))
+$(foreach p, $(BOARD_PARTITION_LIST), $(eval BOARD_$(p)IMAGE_FILE_SYSTEM_TYPE := erofs))
+$(foreach p, $(BOARD_MAIN_PARTITION_LIST), $(eval TARGET_COPY_OUT_$(call to-upper,$(p)) := $(p)))
+
 # A/B + VAB（与官方 fstab 的 slotselect/checkpoint 一致）
 AB_OTA_UPDATER := true
 
