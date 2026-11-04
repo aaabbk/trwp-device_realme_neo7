@@ -65,6 +65,10 @@ BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
 # 禁止：GKI 下与 BOARD_USES_RECOVERY_AS_BOOT 互斥（AOSP board_config.mk L931-946 直接报错）
 # BOARD_USES_RECOVERY_AS_BOOT := true
 
+# TWRP 的 vendor/twrp/build/tasks/kernel.mk:108 要求定义该变量（即使不打包 kernel）。
+# 本机走 vendor_boot 方案、不含 kernel，这里只满足构建检查；aarch64 GKI 的镜像是 Image。
+BOARD_KERNEL_IMAGE_NAME := Image
+
 BOARD_MKBOOTIMG_ARGS += --header_version 4 --pagesize 4096
 
 # ================================================================ 分区大小
