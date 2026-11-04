@@ -69,6 +69,14 @@ BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
 # 本机走 vendor_boot 方案、不含 kernel，这里只满足构建检查；aarch64 GKI 的镜像是 Image。
 BOARD_KERNEL_IMAGE_NAME := Image
 
+# 显式声明"无内核"：vendor_boot 方案不打包 kernel 与 boot.img，
+# 避免 TWRP kernel.mk 继续要求 TARGET_PREBUILT_KERNEL / 内核源码。
+TARGET_NO_KERNEL := true
+
+# vendor_boot 必须打包官方 dtb（原样复用，不得重编）；
+# AOSP 会用该目录生成 dtb.img 并通过 mkbootimg --dtb 打进 vendor_boot。
+BOARD_PREBUILT_DTBIMAGE_DIR := $(DEVICE_PATH)/prebuilt-dtb
+
 BOARD_MKBOOTIMG_ARGS += --header_version 4 --pagesize 4096
 
 # ================================================================ 分区大小
