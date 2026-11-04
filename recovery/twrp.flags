@@ -1,63 +1,30 @@
+# TWRP additional fstab (twrp.flags)
 #
-# twrp.flags - realme Neo7 (RE6022L1 / MT6989)
+# 格式（对齐同平台参考树 xiaomi yuechu / TWRP additional-fstab）：
+#   <mnt_point> <type> <device> [device2] flags=<TWRP flags，用 ; 分隔>
 #
-# TWRP 12.1 在解析 fstab 后读取 /etc/twrp.flags。
-# 格式：段首行为挂载点，随后以 flags= 开头的行给出分号分隔的 TWRP flags。
-#
-# 说明：
-#   - 所有 fstype=emmc 的分区在 TWRP 的 Install Image 里都可刷写，flags 只控制
-#     备份界面是否显示，以及显示名称。
-#   - preloader / lk 只给 flashimg、不给 backup（刷错会变砖，不建议备份/回滚用）。
-#   - 不要把 /cache（= oplusreserve2）标记 wipedata，那是 Oplus 保留区。
-#
+# 注意：不是"段落式"，TWRP 按 fstab 行解析。
+# 本文件只列需要在 TWRP UI 显示 / 可备份 / 可刷写的分区；
+# 其余分区由 recovery/twrp.fstab（TARGET_RECOVERY_FSTAB）提供，供 fs_mgr/init 使用。
 
-# ---------------- 引导/固件：备份列表里显示
-/boot
-    flags=display="Boot";backup=1;flashimg=1
+# ============================ 引导 / 固件（可备份、可刷写）
+/boot           emmc   /dev/block/by-name/boot            flags=display="Boot";slotselect;backup=1;flashimg=1
+/vendor_boot    emmc   /dev/block/by-name/vendor_boot     flags=display="Vendor Boot";slotselect;backup=1;flashimg=1
+/init_boot      emmc   /dev/block/by-name/init_boot       flags=display="Init Boot";slotselect;backup=1;flashimg=1
+/dtbo           emmc   /dev/block/by-name/dtbo            flags=display="DTBO";slotselect;backup=1;flashimg=1
+/vbmeta         emmc   /dev/block/by-name/vbmeta          flags=display="VBMeta";slotselect;backup=1;flashimg=1
+/vbmeta_system  emmc   /dev/block/by-name/vbmeta_system   flags=display="VBMeta System";slotselect;backup=1;flashimg=1
+/vbmeta_vendor  emmc   /dev/block/by-name/vbmeta_vendor   flags=display="VBMeta Vendor";slotselect;backup=1;flashimg=1
+/modem          emmc   /dev/block/by-name/modem           flags=display="Modem";slotselect;backup=1;flashimg=1
+/logo           emmc   /dev/block/by-name/logo            flags=display="Logo";slotselect;backup=1;flashimg=1
+/misc           emmc   /dev/block/by-name/misc            flags=display="Misc";backup=1;flashimg=1
+/super          emmc   /dev/block/by-name/super           flags=display="Super";backup=1;flashimg=1
 
-/vendor_boot
-    flags=display="Vendor Boot";backup=1;flashimg=1
+# 危险分区：只允许刷写，不提供备份（刷错会变砖）
+/preloader      emmc   /dev/block/by-name/preloader_raw   flags=display="Preloader";slotselect;flashimg=1
+/lk             emmc   /dev/block/by-name/lk              flags=display="LK";slotselect;flashimg=1
 
-/init_boot
-    flags=display="Init Boot";backup=1;flashimg=1
-
-/dtbo
-    flags=display="DTBO";backup=1;flashimg=1
-
-/vbmeta
-    flags=display="VBMeta";backup=1;flashimg=1
-
-/vbmeta_system
-    flags=display="VBMeta System";backup=1;flashimg=1
-
-/vbmeta_vendor
-    flags=display="VBMeta Vendor";backup=1;flashimg=1
-
-/modem
-    flags=display="Modem";backup=1;flashimg=1
-
-/logo
-    flags=display="Logo";backup=1;flashimg=1
-
-# ---------------- 危险分区：只允许刷写，不提供备份
-/preloader
-    flags=display="Preloader";flashimg=1
-
-/lk
-    flags=display="LK";flashimg=1
-
-# ---------------- 数据/系统
-/system_root
-    flags=display="System"
-
-/data
-    flags=display="Data";wipeingui;wipedata
-
-/metadata
-    flags=display="Metadata"
-
-/cache
-    flags=display="Cache";wipeingui
-
-/persist
-    flags=display="Persist"
+# ============================ 数据 / 缓存
+/data           f2fs   /dev/block/by-name/userdata        flags=display="Data";wipeingui;wipedata
+/metadata       f2fs   /dev/block/by-name/metadata        flags=display="Metadata"
+/cache          ext4   /dev/block/by-name/oplusreserve2   flags=display="Cache";wipeingui

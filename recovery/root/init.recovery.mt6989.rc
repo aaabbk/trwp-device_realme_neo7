@@ -42,7 +42,19 @@ on boot
     # （本文件由 TWRP init.rc 第 6 行 import，同级 action 先于 TWRP 自身 on boot 执行）
     write /proc/sys/kernel/panic_on_oops 0
 
+    # 显式拉起 adb：TWRP 的 init.rc 只在 ro.debuggable=1 时自动设 sys.usb.config，
+    # 参考树（xiaomi yuechu）也是在这里显式设置，避免 adb 不可用。
+    setprop sys.usb.config adb
+
 on fs
+    # ---------------- MTK 兼容路径 ----------------
+    # TWRP 及 MTK 工具常用 /dev/block/bootdevice/by-name/... 路径；
+    # 同时把 UFS boot LUN（实机 /dev/block/sda、sdb）映射成 mmcblk0boot0/1。
+    # 与同平台参考树 xiaomi yuechu 的 init.recovery.mt6895.rc 一致。
+    symlink /dev/block /dev/block/bootdevice
+    symlink /dev/block/sda /dev/block/mmcblk0boot0
+    symlink /dev/block/sdb /dev/block/mmcblk0boot1
+
     # ---------------- USB gadget ----------------
     # 实机 ls /sys/class/udc = "11201000.usb0  11211000.usb1"
     setprop sys.usb.configfs 1
